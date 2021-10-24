@@ -2,4 +2,4 @@
 email - sahilgujar@gmail.com
 phone - 8805529398
 
-Languages known - JavaScript
+Languages known - JavaScript, React.js(redux)
