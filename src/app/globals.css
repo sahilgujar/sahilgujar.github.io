@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --text: #1c1917;
+  --muted: #57534e;
+  --faint: #a8a29e;
+  --line: #e7e5e4;
+  --accent: #4f46e5;
+  --accent-2: #db2777;
+  --accent-soft: #eef2ff;
+  --chip: #f5f5f4;
+  --glow: rgb(79 70 229 / 0.1);
+  /* Contribution graph shades (GitHub's palette). */
+  --heat-0: #ebedf0;
+  --heat-1: #9be9a8;
+  --heat-2: #40c463;
+  --heat-3: #30a14e;
+  --heat-4: #216e39;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c0a09;
+    --surface: #161413;
+    --text: #f5f5f4;
+    --muted: #a8a29e;
+    --faint: #78716c;
+    --line: #292524;
+    --accent: #818cf8;
+    --accent-2: #f472b6;
+    --accent-soft: #1e1b4b;
+    --chip: #1f1d1b;
+    --glow: rgb(129 140 248 / 0.14);
+    --heat-0: #1f1d1b;
+    --heat-1: #0e4429;
+    --heat-2: #006d32;
+    --heat-3: #26a641;
+    --heat-4: #39d353;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-soft: var(--accent-soft);
+  --color-chip: var(--chip);
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@custom-variant stack (@media (min-width: 1024px) and (min-height: 720px));
+
+html {
+  scroll-padding-top: 24px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+  /* Hero pieces wait for GSAP to reveal them (only when JS is running; see layout.tsx).
+     Failsafe: if the JS bundle never arrives (flaky network, blockers), show them after 4s anyway. */
+  .js .hero-hide {
+    visibility: hidden;
+    animation: hero-failsafe 0s 4s forwards;
+  }
+}
+
+@keyframes hero-failsafe {
+  to { visibility: visible; }
+}
+
+/* Lenis does the smoothing; native smooth scrolling on top of it would double-animate every jump. */
+html.lenis { scroll-behavior: auto; }
+
+body {
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Project cards: a soft light that follows the cursor (position set from JS as --x / --y). */
+.spotlight {
+  background:
+    radial-gradient(420px circle at var(--x, -100%) var(--y, -100%), var(--glow), transparent 60%),
+    var(--surface);
+}
+
+/* Faint grid behind the hero, fading out towards the edges. */
+.hero-grid {
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, black 20%, transparent 75%);
+}
+
+/* Outlined display type for the marquee. */
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--faint);
+}
+
+/* Print: lets employers save the page as a clean PDF resume. */
+@media print {
+  :root {
+    --bg: #fff; --surface: #fff; --text: #000; --muted: #333; --faint: #555;
+    --line: #ccc; --accent: #000; --accent-2: #000; --accent-soft: #fff; --chip: #fff; --glow: transparent;
+  }
+  body { font-size: 11pt; }
+  .no-print { display: none !important; }
+  /* Undo every animation state, including sections the reader never scrolled to. */
+  * { opacity: 1 !important; visibility: visible !important; transform: none !important; filter: none !important; }
+  .stack\:sticky { position: static !important; }
+  article, .job { break-inside: avoid; }
+  a { color: #000 !important; }
+}
